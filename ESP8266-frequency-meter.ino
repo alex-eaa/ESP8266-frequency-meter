@@ -17,7 +17,7 @@
 #include <FS.h>
 #include <ArduinoJson.h>
 
-#define LED_WIFI 2     // номер пина светодиода GPIO2 (D4)
+#define LED_WIFI 222     // номер пина светодиода GPIO2 (D4)
 #define LED_RED 15     // пин, красного светодиода 
 #define LED_GREEN 12   // пин, зеленого светодиода 
 #define LED_BLUE 13    // пин, синего светодиода
