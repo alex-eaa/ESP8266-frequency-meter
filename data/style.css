@@ -1,0 +1,57 @@
+body{
+padding:0 5px;
+color:black;
+background:#fff;
+font-size:14px;
+font-family:arial;
+}
+img{
+border:1;
+}
+.top{
+color:#888;
+height: 28px;
+background:url(logo.gif) no-repeat 10px 0;
+padding:3px 0 0 55px;
+font-style:italic;
+font-size:18px;
+margin:0 0 10px 0;
+}
+.top img{
+vertical-align:middle;
+}
+.menu{
+border-top:#fab548 5px solid;
+background:#efeff0 url(logo.gif) no-repeat 10px 10px;
+padding:5px 5px 5px 80px;
+margin:0 0 10px 0;
+border-radius:5px;
+}
+.menu a,
+.menu a:link{
+display:block;
+font-weight:bold;
+text-decoration:none;
+color:#1486ba;
+padding:0 5px 1px 10px;
+font-size:13px;
+border-radius:3px;
+margin:0 0 1px 0;
+border-bottom:#d6d9da 1px solid;
+}
+.menu a:hover{
+background:#d6d9da;
+}
+.content{
+background:#eee;
+border-radius:5px;
+border-top:#1486ba 5px solid;
+padding:5px 10px;
+margin:0 0 10px 0;
+}
+#y, #m, #d, #h, #min, #s, #MDBError{
+visibility: hidden;
+}
+input[type="number"] {
+  width: 100%;
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<title>Главная</title>
+	<link rel='stylesheet' href='style.css'>	
+	<style type="text/css">
+		input[type=number] {width:4em; font-size:18px;}
+		#myCanvas {background-color:#fff; border:0px solid #ccc;}
+		h1 {font-size:4em;}
+		table {width: 100%;}
+		zzztd {border: 1px solid;}
+		#stolb1 {width: 155px;}	
+		#tr1 {vertical-align: top;}	
+		#tr3 {vertical-align: bottom;}	
+		#tr2 {text-align: center;}
+	</style>
+</head>
+
+<body>
+<h3 class='top' id='top'>Главная</h3>
+<div class='menu' id='menu'>
+	<a href='index.htm'>Главная</a>
+	<a href='setup.htm'>Системные настройки</a>
+	<a href='edit.htm'>Файлы</a>
+</div>
+
+
+<div class='content' id='content'>
+	<table>
+		<tr id='tr1'>
+			<td rowspan="3" id='stolb1'>
+				<canvas id="myCanvas" width="150" height="500"></canvas>
+			</td>
+			<td>
+				<input type='number' onchange="predelMaxSet()" id='predelMax' name='predelMax' value='2000'>
+			</td>
+		</tr>
+		<tr id='tr2'>
+			<td>
+				<h1 id='hz'>0</h1>
+				<button id='button' onclick="on()">Включить измерение</button>
+			</td>
+		</tr>
+		<tr id='tr3'> 
+			<td>
+				<input type='number' onchange="predelMinSet()" id='predelMin' name='predelMin' value='0'>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+<script>
+	let canvasAutoHeight = document.documentElement.clientHeight - document.getElementById("top").offsetHeight - document.getElementById("menu").offsetHeight - 3*10 - 3*5 - 20;
+	document.getElementById("myCanvas").height = canvasAutoHeight;
+	//alert( window.innerHeight);
+	//alert( document.documentElement.clientHeight );
+
+	let data = {
+		page: "index",
+		freq: 0,
+		impulsIzmerenieEnable: 0
+	};
+
+	let canvas = document.getElementById("myCanvas");
+	let width = canvas.width;
+	let height = canvas.height;
+	let widhtBar = 70;
+	let heightBar = height-10-10-5;
+	let bigLine = 20;
+	let litleLine = 10;
+	let shiftLine = 2;
+	let predelMax = 1*document.getElementById("predelMax").value;
+	let predelMin = 1*document.getElementById("predelMin").value;
+	let predelDelta = predelMax-predelMin;
+	let context = canvas.getContext("2d");
+
+	
+	function drawStart() {
+		//console.log('predelMax', ':', predelMax);
+		//console.log('predelMin', ':', predelMin);
+		context.clearRect( 0, 0, width, height );
+		context.lineWidth = 1;
+		context.strokeStyle = "green";
+		context.strokeRect( 10, height-10, widhtBar, -heightBar );
+
+		context.beginPath();
+		context.lineWidth = 1;
+		context.strokeStyle = "red";
+		context.font = "16px serif";
+		let i=0;
+		let iText=predelMin;
+		while (i <= heightBar){
+			context.moveTo(10+widhtBar+shiftLine, height-10-i);
+			context.lineTo(10+widhtBar+shiftLine+bigLine, height-10-i);
+			context.fillText(iText, 10+widhtBar+shiftLine+25, height-10-i+4);
+			i = i + heightBar/10;
+			iText = 1*iText + (predelMax-predelMin)/10;
+			iText = iText.toFixed(0);
+		}
+		context.stroke();
+
+		context.lineWidth = 0.5;
+		i=0;
+		while (i <= heightBar){
+			context.moveTo(10+widhtBar+shiftLine, height-10-i);
+			context.lineTo(10+widhtBar+shiftLine+litleLine, height-10-i);
+			i = i + heightBar/50;
+		}
+		context.stroke();
+	}
+
+
+	function drawFrame() {
+		context.clearRect( 10, height-10, widhtBar, -heightBar );
+		context.fillStyle = "green";
+		context.fillRect( 10, height-10+heightBar*(predelMin/predelDelta), widhtBar, -heightBar*(data["freq"]/predelDelta) );
+	}
+
+
+	function updateAllPage() {
+		document.getElementById("hz").innerHTML = data["freq"];
+		if ( data["impulsIzmerenieEnable"] == 1 ) {
+			document.getElementById("button").innerHTML = 'Отключить измерение';
+		} else {
+			document.getElementById("button").innerHTML = 'Включить измерение';
+		}
+	};
+
+
+	function plus() {
+		if (data["freq"] >= 800){
+			clearTimeout(timerId);
+			timerId = setInterval(minus, 100);
+		} else {
+			data["freq"] = data["freq"] + 50;
+			updateAllPage();
+			drawFrame();
+		}
+	}
+
+	function minus() {
+		if (data["freq"] == 0){
+			clearTimeout(timerId);
+			timerId = setInterval(plus, 100);
+		} else {
+			data["freq"] = data["freq"] - 50;
+			updateAllPage();
+			drawFrame();
+		}
+	}
+
+	//let timerId = setInterval(plus, 100);
+
+		drawFrame();
+		drawStart();
+		console.log('window.devicePixelRatio: ', window.devicePixelRatio);
+		//console.log('URL: ', 'ws://' + location.host + ':81/');
+		//let connection = new WebSocket('ws://192.168.43.242:81/index.htm', ['arduino']);
+		let connection = new WebSocket('ws://' + location.host + ':81/index.htm', ['arduino']);
+	
+		connection.onopen = function () {
+			//connection.send('ping');		
+		};
+
+		connection.onerror = function (error) {
+			console.log('WebSocket Error ', error);
+			alert("Ошибка " + error.message);
+		};
+
+		connection.onmessage = function (e) {
+			console.log('FROM Server: ', e.data);
+			let obj = JSON.parse(e.data);
+			for (x in obj) {
+				if ( data[x]  != null ) {
+					data[x] = obj[x];
+					//console.log(x, ':', obj[x]);
+					updateAllPage();
+					drawFrame();
+				}
+			}
+		};
+
+
+	function on () {
+		let varButton = document.getElementById("button").innerHTML;
+		console.log('varButton: ', varButton);
+		if ( varButton == 'Включить измерение' ) {
+			document.getElementById("button").innerHTML = 'Отключить измерение';
+			data["impulsIzmerenieEnable"] = 1;
+			console.log('TO Server: ', 'on');
+			if (connection) connection.send('on');
+		} else {
+			document.getElementById("button").innerHTML = 'Включить измерение';
+			data["impulsIzmerenieEnable"] = 0;
+			console.log('TO Server: ', 'off');
+			if (connection) connection.send('off');
+		}
+	};
+
+	function predelMaxSet () {
+		predelMax = 1*document.getElementById("predelMax").value;
+		predelDelta = predelMax-predelMin;
+		drawStart();
+	};
+	function predelMinSet () {
+		predelMin = 1*document.getElementById("predelMin").value;
+		predelDelta = predelMax-predelMin;
+		drawStart();
+	};
+
+
+</script>
+</body>
+</html>

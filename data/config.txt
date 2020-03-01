@@ -1,0 +1,1 @@
+{"wifiAP_mode":false,"p_ssidAP":"AP","p_passwordAP":"12345678","p_ssid":"EAA24G","p_password":"1234567890adminalex","var1":55,"var2":77,"str1":"Text","str2":"Hello word","ip":[192,168,1,43],"sbnt":[255,255,255,0],"gtw":[192,168,1,1]}

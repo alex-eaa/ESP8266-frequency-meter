@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<title>Настройка системы</title>
+	<link rel='stylesheet' href='style.css'>
+</head>
+
+<body>
+<h3 class='top'>Настройка системы</h3>
+<div class='menu'>
+	<a href='index.htm'>Главная</a>
+	<a href='setup.htm'>Системные настройки</a>
+	<a href='edit.htm'>Файлы</a>
+</div>
+
+<center>
+<div class='content'>
+
+<h3>Настройка WiFi</h3>
+
+<h4><input type='radio' id='wifiAP_mode_off' name='wifiAP_mode'/> Режим клиента</h4>
+
+<p>Имя сети: <input type='text' id='p_ssid' name='p_ssid' maxlength='32' value=''/></p>
+<p>Пароль сети: <input type='text' id='p_password' name='p_password' maxlength='64' value=''/></p>
+
+<p>IP-адрес: <input type='text' size='3' id='ip_0' name='ip_0' maxlength='3' value=''/>
+:<input type='text' id='ip_1' name='ip_1' size='3' maxlength='3' value=''/>
+:<input type='text' id='ip_2' name='ip_2' size='3' maxlength='3' value=''/>
+:<input type='text' id='ip_3' name='ip_3' size='3' maxlength='3' value=''/>
+</p>
+
+<p>Маска подсети: <input type='text' size='3' id='sbnt_0' name='sbnt_0' maxlength='3' value=''/>
+:<input type='text' id='sbnt_1' name='sbnt_1' size='3' maxlength='3' value=''/>
+:<input type='text' id='sbnt_2' name='sbnt_2' size='3' maxlength='3' value=''/>
+:<input type='text' id='sbnt_3' name='sbnt_3' size='3' maxlength='3' value=''/>
+</p>
+
+<p>Основной шлюз: <input type='text' size='3' id='gtw_0' name='gtw_0' maxlength='3' value=''/>
+:<input type='text' id='gtw_1' name='gtw_1' size='3' maxlength='3' value=''/>
+:<input type='text' id='gtw_2' name='gtw_2' size='3' maxlength='3' value=''/>
+:<input type='text' id='gtw_3' name='gtw_3' size='3' maxlength='3' value=''/>
+</p>
+
+<h4><input type='radio' id='wifiAP_mode_on' name='wifiAP_mode'/> Режим точки доступа</h4>
+
+<p>Имя сети: <input type='text' id='p_ssidAP' name='p_ssidAP' maxlength='32' value=''/></p>
+<p>Пароль сети: <input type='text' id='p_passwordAP' name='p_passwordAP' maxlength='64' value=''/></p>
+
+<p><button onclick="sendData()">Сохранить</button></p>
+<p><button onclick="sendReset()">Перезагрузить</button></p>
+</div>
+
+<div class='content'>
+    <h3>Обновление прошивки:</h3>
+    <form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br>
+</div>
+
+</center>
+
+<script>
+	let data = {
+		page: "setup",
+		ip: new Array(),
+		sbnt: new Array(),
+		gtw: new Array(),
+		p_ssid: "",
+		p_password: "",
+		p_ssidAP: "",
+		p_passwordAP: "",
+		wifiAP_mode: 0
+	};
+
+	function updateAllData() {
+		data["ip"][0] = (document.getElementById('ip_0').value);
+		data["ip"][1] = (document.getElementById('ip_1').value);
+		data["ip"][2] = (document.getElementById('ip_2').value);
+		data["ip"][3] = (document.getElementById('ip_3').value);
+		data["sbnt"][0] = (document.getElementById('sbnt_0').value);
+		data["sbnt"][1] = (document.getElementById('sbnt_1').value);
+		data["sbnt"][2] = (document.getElementById('sbnt_2').value);
+		data["sbnt"][3] = (document.getElementById('sbnt_3').value);
+		data["gtw"][0] = (document.getElementById('gtw_0').value);
+		data["gtw"][1] = (document.getElementById('gtw_1').value);
+		data["gtw"][2] = (document.getElementById('gtw_2').value);
+		data["gtw"][3] = (document.getElementById('gtw_3').value);
+		data["p_ssid"] = document.getElementById("p_ssid").value;
+		data["p_password"] = document.getElementById("p_password").value;
+		data["p_ssidAP"] = document.getElementById("p_ssidAP").value;
+		data["p_passwordAP"] = document.getElementById("p_passwordAP").value;
+		if (document.getElementById('wifiAP_mode_on').checked == true)   data["wifiAP_mode"] = true;
+		else  data["wifiAP_mode"] = false;
+	};
+
+
+	function updateAllPage() {
+		document.getElementById('ip_0').value = data["ip"][0];
+		document.getElementById('ip_1').value = data["ip"][1]; 
+		document.getElementById('ip_2').value = data["ip"][2]; 
+		document.getElementById('ip_3').value = data["ip"][3];
+		document.getElementById('sbnt_0').value = data["sbnt"][0];
+		document.getElementById('sbnt_1').value = data["sbnt"][1];
+		document.getElementById('sbnt_2').value = data["sbnt"][2];
+		document.getElementById('sbnt_3').value = data["sbnt"][3];
+		document.getElementById('gtw_0').value = data["gtw"][0];
+		document.getElementById('gtw_1').value = data["gtw"][1]; 
+		document.getElementById('gtw_2').value = data["gtw"][2]; 
+		document.getElementById('gtw_3').value = data["gtw"][3];
+		if (data["wifiAP_mode"]==true) {
+			document.getElementById('wifiAP_mode_on').checked = true;
+			document.getElementById('wifiAP_mode_off').checked = false;
+		} else {
+			document.getElementById('wifiAP_mode_on').checked = false;
+			document.getElementById('wifiAP_mode_off').checked = true;	
+		}
+		document.getElementById('p_ssid').value = data["p_ssid"];
+		document.getElementById('p_password').value = data["p_password"];
+		document.getElementById('p_ssidAP').value = data["p_ssidAP"];
+		document.getElementById('p_passwordAP').value = data["p_passwordAP"];
+	};
+
+	function sendData () {
+		updateAllData();
+		console.log('TO Server: ', JSON.stringify( data ));
+		connection.send(JSON.stringify( data ));
+	};
+
+	function sendReset () {
+		let msg = 'RESET';
+		console.log('TO Server: ', msg);
+		connection.send(msg);
+	};
+
+		
+
+	//let connection = new WebSocket('ws://192.168.43.242:81/setup.htm', ['arduino']);
+	let connection = new WebSocket('ws://' + location.host + ':81/setup.htm', ['arduino']);
+	console.log(connection);
+	
+	connection.onopen = function () {
+		//connection.send('ping');
+	};
+
+	connection.onerror = function (error) {
+		console.log('WebSocket Error ', error);
+		alert("Ошибка " + error.message);
+	};
+
+	connection.onmessage = function (e) {
+		console.log('FROM Server: ', e.data);
+		let obj = JSON.parse(e.data);
+		for (x in obj) {
+			if ( data[x]  != null ) {
+				data[x] = obj[x];
+				switch (x) {
+					case 'wifiAP_mode':
+						if (data[x]==true) {
+							document.getElementById('wifiAP_mode_on').checked = true;
+							document.getElementById('wifiAP_mode_off').checked = false;
+						} else {
+							document.getElementById('wifiAP_mode_on').checked = false;
+							document.getElementById('wifiAP_mode_off').checked = true;	
+						}
+						break;
+					case 'ip':
+						document.getElementById('ip_0').value = data[x][0];
+						document.getElementById('ip_1').value = data[x][1]; 
+						document.getElementById('ip_2').value = data[x][2]; 
+						document.getElementById('ip_3').value = data[x][3];
+						break;
+					case 'sbnt':
+						document.getElementById('sbnt_0').value = data[x][0];
+						document.getElementById('sbnt_1').value = data[x][1]; 
+						document.getElementById('sbnt_2').value = data[x][2]; 
+						document.getElementById('sbnt_3').value = data[x][3];
+						break;
+					case 'gtw':
+						document.getElementById('gtw_0').value = data[x][0];
+						document.getElementById('gtw_1').value = data[x][1]; 
+						document.getElementById('gtw_2').value = data[x][2]; 
+						document.getElementById('gtw_3').value = data[x][3];
+						break;
+					default:
+						document.getElementById(x).value = obj[x];
+				}
+
+			}
+		}
+	};
+
+
+
+</script>
+
+</body>
+</html>
