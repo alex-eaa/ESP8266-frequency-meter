@@ -175,7 +175,7 @@
 			let obj = JSON.parse(e.data);
 			for (x in obj) {
 				if ( data[x]  != null ) {
-					data[x] = obj[x]*5/100;
+					data[x] = obj[x]*4/10;
 					//console.log(x, ':', obj[x]);
 					updateAllPage();
 					drawFrame();

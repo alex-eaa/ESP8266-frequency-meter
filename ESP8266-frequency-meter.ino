@@ -126,7 +126,7 @@ void loop() {
   if ( impulsIzmerenieEnable == 1 && impulsTimerEnable == 0) {
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
-    timer1_write(1000000);    //5000 едениц = 1мс; 1000000 = 200 мс
+    timer1_write(1250000);    //5000 едениц = 1мс; 1250000 = 250 мс
     attachInterrupt (digitalPinToInterrupt (IMPULS_IN), interruptFunction, FALLING);
     impulsCountedEnd = 0;
     impulsTimerEnable = 1;
@@ -138,7 +138,7 @@ void loop() {
     detachInterrupt(digitalPinToInterrupt (IMPULS_IN));
 
     //Определяем количество импульсов за 1 сек, т.е ГЦ
-    impulsFreq = (impulsCount*100 + impulsFreqPrev) / 2;
+    impulsFreq = (impulsCount*10 + impulsFreqPrev) / 2;
 
     Serial.println(impulsFreq);
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
