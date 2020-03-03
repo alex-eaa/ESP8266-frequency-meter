@@ -44,8 +44,8 @@ unsigned int impulsFreq = 0;
 unsigned int impulsFreqArray[] = {0, 0, 0, 0};
 unsigned int iFA = 0;
 unsigned int impulsFreqPrev = 0;
-unsigned int impulsCount = 0;
-bool impulsCountedEnd = 1;
+volatile unsigned int impulsCount = 0;
+volatile bool impulsCountedEnd = 1;
 bool impulsZaschitan = 0;
 bool impulsIzmerenieEnable = 0;
 bool impulsTimerEnable = 0;
@@ -65,6 +65,10 @@ unsigned int time_msg2;
 
 void ICACHE_RAM_ATTR bitTxIsr() {
   impulsCountedEnd = 1;
+}
+
+void  ICACHE_RAM_ATTR interruptFunction() {
+  impulsCount ++;
 }
 
 void setup() {
@@ -122,42 +126,36 @@ void loop() {
   if ( impulsIzmerenieEnable == 1 && impulsTimerEnable == 0) {
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
-    timer1_write(500000);    //5000 едениц = 1мс; 500000 = 100 мс
+    timer1_write(1000000);    //5000 едениц = 1мс; 1000000 = 200 мс
+    attachInterrupt (digitalPinToInterrupt (IMPULS_IN), interruptFunction, FALLING);
     impulsCountedEnd = 0;
     impulsTimerEnable = 1;
     impulsCount = 0;
   }
 
   //Вычисление частоты импульсов
-  if ( impulsCountedEnd == 0 && impulsTimerEnable == 1) {
-    if ( digitalRead(IMPULS_IN) == 0 && impulsZaschitan == 0) {
-      impulsCount ++;
-      impulsZaschitan = 1;
-    } else if (digitalRead(IMPULS_IN) == 1 && impulsZaschitan == 1) {
-      impulsZaschitan = 0;
-    }
-  } else {
+  if ( impulsCountedEnd == 1 && impulsTimerEnable == 1) {
+    detachInterrupt(digitalPinToInterrupt (IMPULS_IN));
+
     //Определяем количество импульсов за 1 сек, т.е ГЦ
-    impulsFreqArray[iFA] = impulsCount * 10;
-    iFA ++;
-    if (iFA == 4)  iFA = 0;
-    impulsFreq = impulsFreqArray[0] + impulsFreqArray[1] + impulsFreqArray[2] + impulsFreqArray[3];
-    impulsFreq = impulsFreq / 4;
+    impulsFreq = impulsCount * 5;
 
     Serial.println(impulsFreq);
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
-    if ( sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
-      if (impulsFreqPrev != impulsFreq ) {
-        //if ( millis() - timeT1 > speedT ) {
-        String data = "{\"freq\":";
-        data += impulsFreq;
-        data += "}";
-        int startT_broadcastTXT = micros();
-        webSocket.broadcastTXT(data);
-        int T_broadcastTXT = micros() - startT_broadcastTXT;
-        if (T_broadcastTXT > 100000)  checkPing();
-        timeT1 = millis();
-        //}
+    if (true) {
+      if (sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
+        if (impulsFreqPrev != impulsFreq ) {
+          //if ( millis() - timeT1 > speedT ) {
+          String data = "{\"freq\":";
+          data += impulsFreq;
+          data += "}";
+          int startT_broadcastTXT = micros();
+          webSocket.broadcastTXT(data);
+          int T_broadcastTXT = micros() - startT_broadcastTXT;
+          if (T_broadcastTXT > 100000)  checkPing();
+          timeT1 = millis();
+          //}
+        }
       }
     }
     impulsFreqPrev = impulsFreq;
