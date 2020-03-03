@@ -121,7 +121,7 @@
 
 
 	function updateAllPage() {
-		document.getElementById("hz").innerHTML = data["freq"];
+		document.getElementById("hz").innerHTML = data["freq"].toFixed(0);
 		if ( data["impulsIzmerenieEnable"] == 1 ) {
 			document.getElementById("button").innerHTML = 'Отключить измерение';
 		} else {
@@ -175,7 +175,7 @@
 			let obj = JSON.parse(e.data);
 			for (x in obj) {
 				if ( data[x]  != null ) {
-					data[x] = obj[x];
+					data[x] = obj[x]*5/100;
 					//console.log(x, ':', obj[x]);
 					updateAllPage();
 					drawFrame();
