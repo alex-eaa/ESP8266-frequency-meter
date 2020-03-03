@@ -41,6 +41,8 @@ unsigned int speedT = 200;  //период отправки данных, мил
 
 unsigned int timerPeriod = 1000000;      //1мс=5000
 unsigned int impulsFreq = 0;
+unsigned int impulsFreqArray[] = {0, 0, 0, 0};
+unsigned int iFA = 0;
 unsigned int impulsFreqPrev = 0;
 unsigned int impulsCount = 0;
 bool impulsCountedEnd = 1;
@@ -120,7 +122,7 @@ void loop() {
   if ( impulsIzmerenieEnable == 1 && impulsTimerEnable == 0) {
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
-    timer1_write(2500000);    //5000 едениц = 1мс; 1000000 = 500 мс
+    timer1_write(500000);    //5000 едениц = 1мс; 500000 = 100 мс
     impulsCountedEnd = 0;
     impulsTimerEnable = 1;
     impulsCount = 0;
@@ -136,7 +138,13 @@ void loop() {
     }
   } else {
     //Определяем количество импульсов за 1 сек, т.е ГЦ
-    impulsFreq = impulsCount * 2;
+    impulsFreqArray[iFA] = impulsCount * 10;
+    iFA ++;
+    if (iFA == 4)  iFA = 0;
+    impulsFreq = impulsFreqArray[0] + impulsFreqArray[1] + impulsFreqArray[2] + impulsFreqArray[3];
+    impulsFreq = impulsFreq / 4;
+
+    Serial.println(impulsFreq);
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
     if ( sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
       if (impulsFreqPrev != impulsFreq ) {
