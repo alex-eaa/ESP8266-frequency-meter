@@ -43,7 +43,7 @@ unsigned int timerPeriod = 1000000;      //1мс=5000
 unsigned int impulsFreq = 0;
 unsigned int impulsFreqPrev = 0;
 unsigned int impulsCount = 0;
-bool impulsCountedEnd = 0;
+bool impulsCountedEnd = 1;
 bool impulsZaschitan = 0;
 bool impulsIzmerenieEnable = 0;
 bool impulsTimerEnable = 0;
@@ -63,7 +63,6 @@ unsigned int time_msg2;
 
 void ICACHE_RAM_ATTR bitTxIsr() {
   impulsCountedEnd = 1;
-  impulsTimerEnable = 0;
 }
 
 void setup() {
@@ -121,14 +120,14 @@ void loop() {
   if ( impulsIzmerenieEnable == 1 && impulsTimerEnable == 0) {
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
-    timer1_write(1250000);    //5000 едениц = 1мс; 1250000 = 250 мс
+    timer1_write(2500000);    //5000 едениц = 1мс; 1000000 = 500 мс
     impulsCountedEnd = 0;
     impulsTimerEnable = 1;
     impulsCount = 0;
   }
 
   //Вычисление частоты импульсов
-  if ( impulsCountedEnd == 0 ) {
+  if ( impulsCountedEnd == 0 && impulsTimerEnable == 1) {
     if ( digitalRead(IMPULS_IN) == 0 && impulsZaschitan == 0) {
       impulsCount ++;
       impulsZaschitan = 1;
@@ -137,7 +136,7 @@ void loop() {
     }
   } else {
     //Определяем количество импульсов за 1 сек, т.е ГЦ
-    impulsFreq = impulsCount * 4;
+    impulsFreq = impulsCount * 2;
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
     if ( sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
       if (impulsFreqPrev != impulsFreq ) {
@@ -154,6 +153,7 @@ void loop() {
       }
     }
     impulsFreqPrev = impulsFreq;
+    impulsTimerEnable = 0;
   }
 
 }
