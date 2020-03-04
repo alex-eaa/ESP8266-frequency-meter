@@ -138,9 +138,10 @@ void loop() {
     detachInterrupt(digitalPinToInterrupt (IMPULS_IN));
 
     //Определяем количество импульсов за 1 сек, т.е ГЦ
+    Serial.println(impulsCount);
     impulsFreq = (impulsCount*10 + impulsFreqPrev) / 2;
 
-    Serial.println(impulsFreq);
+    //Serial.println(impulsFreq);
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
     if (true) {
       if (sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
