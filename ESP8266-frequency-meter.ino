@@ -41,12 +41,11 @@ unsigned int speedT = 200;  //период отправки данных, мил
 
 unsigned int timerPeriod = 1000000;      //1мс=5000
 unsigned int impulsFreq = 0;
-unsigned int impulsFreqArray[] = {0, 0, 0, 0};
-unsigned int iFA = 0;
 unsigned int impulsFreqPrev = 0;
 volatile unsigned int impulsCount = 0;
+unsigned int impulsCountArray[] = {0, 0, 0};
+int indArray = 0;
 volatile bool impulsCountedEnd = 1;
-bool impulsZaschitan = 0;
 bool impulsIzmerenieEnable = 0;
 bool impulsTimerEnable = 0;
 
@@ -138,10 +137,13 @@ void loop() {
     detachInterrupt(digitalPinToInterrupt (IMPULS_IN));
 
     //Определяем количество импульсов за 1 сек, т.е ГЦ
-    Serial.println(impulsCount);
-    impulsFreq = (impulsCount*10 + impulsFreqPrev) / 2;
+    //Serial.println(impulsCount);
+    impulsCountArray[indArray] = impulsCount * 100;
+    impulsFreq = (impulsCountArray[0] + impulsCountArray[1] + impulsCountArray[2]) / 3;
+    indArray ++;
+    if (indArray == 3)  indArray = 0;
 
-    //Serial.println(impulsFreq);
+    Serial.println(impulsFreq);
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
     if (true) {
       if (sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
