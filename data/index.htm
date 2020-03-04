@@ -6,15 +6,16 @@
 	<title>Главная</title>
 	<link rel='stylesheet' href='style.css'>	
 	<style type="text/css">
-		input[type=number] {width:4em; font-size:18px;}
+		input[type=number],button {width:3em; font-size:18px;}
 		#myCanvas {background-color:#fff; border:0px solid #ccc;}
 		h1 {font-size:4em;}
 		table {width: 100%;}
-		zzztd {border: 1px solid;}
 		#stolb1 {width: 155px;}	
 		#tr1 {vertical-align: top;}	
 		#tr3 {vertical-align: bottom;}	
 		#tr2 {text-align: center;}
+		.colortextred {color:red;}
+		.colortextgray {color:gray;}
 	</style>
 </head>
 
@@ -35,17 +36,23 @@
 			</td>
 			<td>
 				<input type='number' onchange="predelMaxSet()" id='predelMax' name='predelMax' value='2000'>
+				<p><button onclick="predMaxMinus()">-100</button>
+				<button onclick="predMaxPlus()">+100</button></p>
+
 			</td>
 		</tr>
 		<tr id='tr2'>
 			<td>
 				<h1 id='hz'>0</h1>
-				<button id='button' onclick="on()">Включить измерение</button>
+				<button id='butOnCV' class="colortextred" onclick="onCV()">ЦВ</button>
+				<button id='butOnTG' class="colortextgray" onclick="onTG()">ТГ</button>
 			</td>
 		</tr>
 		<tr id='tr3'> 
 			<td>
-				<input type='number' onchange="predelMinSet()" id='predelMin' name='predelMin' value='0'>
+				<button onclick="predMinMinus()">-100</button>
+				<button onclick="predMinPlus()">+100</button>
+				<p><input type='number' onchange="predelMinSet()" id='predelMin' name='predelMin' value='0'></p>
 			</td>
 		</tr>
 	</table>
@@ -61,7 +68,7 @@
 	let data = {
 		page: "index",
 		freq: 0,
-		impulsIzmerenieEnable: 0
+		impulsIzmerenieEnable: 0  //0-off, 1-CV, 2-TG
 	};
 
 	let canvas = document.getElementById("myCanvas");
@@ -79,8 +86,6 @@
 
 	
 	function drawStart() {
-		//console.log('predelMax', ':', predelMax);
-		//console.log('predelMin', ':', predelMin);
 		context.clearRect( 0, 0, width, height );
 		context.lineWidth = 1;
 		context.strokeStyle = "green";
@@ -123,41 +128,28 @@
 	function updateAllPage() {
 		//document.getElementById("hz").innerHTML = data["freq"].toFixed(0);
 		document.getElementById("hz").innerHTML = Math.floor(data["freq"]);
-		if ( data["impulsIzmerenieEnable"] == 1 ) {
-			document.getElementById("button").innerHTML = 'Отключить измерение';
-		} else {
-			document.getElementById("button").innerHTML = 'Включить измерение';
+		if ( data["impulsIzmerenieEnable"] == 0 ) {
+			document.getElementById("butOnCV").className = "colortextgray";
+			document.getElementById("butOnTG").className = "colortextgray";
+		} else if (data["impulsIzmerenieEnable"] == 1) {
+			document.getElementById("butOnCV").className = "colortextred";
+			document.getElementById("butOnTG").className = "colortextgray";
+		} else if (data["impulsIzmerenieEnable"] == 2) {
+			document.getElementById("butOnCV").className = "colortextgray";
+			document.getElementById("butOnTG").className = "colortextred";
 		}
 	};
 
+	function sendData () {
+		let msg = '{"impulsIzmerenieEnable":' + data["impulsIzmerenieEnable"] + '}';
+		console.log('TO Server: ', msg);
+		if (connection) connection.send(msg);
+	};
 
-	function plus() {
-		if (data["freq"] >= 800){
-			clearTimeout(timerId);
-			timerId = setInterval(minus, 100);
-		} else {
-			data["freq"] = data["freq"] + 50;
-			updateAllPage();
-			drawFrame();
-		}
-	}
-
-	function minus() {
-		if (data["freq"] == 0){
-			clearTimeout(timerId);
-			timerId = setInterval(plus, 100);
-		} else {
-			data["freq"] = data["freq"] - 50;
-			updateAllPage();
-			drawFrame();
-		}
-	}
-
-	//let timerId = setInterval(plus, 100);
 
 		drawFrame();
 		drawStart();
-		console.log('window.devicePixelRatio: ', window.devicePixelRatio);
+		updateAllPage();
 		//console.log('URL: ', 'ws://' + location.host + ':81/');
 		//let connection = new WebSocket('ws://192.168.43.242:81/index.htm', ['arduino']);
 		let connection = new WebSocket('ws://' + location.host + ':81/index.htm', ['arduino']);
@@ -176,42 +168,69 @@
 			let obj = JSON.parse(e.data);
 			for (x in obj) {
 				if ( data[x]  != null ) {
-					data[x] = obj[x]*4/100;
-					//console.log(x, ':', obj[x]);
+					data[x] = obj[x];
 					updateAllPage();
 					drawFrame();
 				}
 			}
+			data["freq"] = data["freq"]*4/10;
 		};
 
 
-	function on () {
-		let varButton = document.getElementById("button").innerHTML;
-		console.log('varButton: ', varButton);
-		if ( varButton == 'Включить измерение' ) {
-			document.getElementById("button").innerHTML = 'Отключить измерение';
-			data["impulsIzmerenieEnable"] = 1;
-			console.log('TO Server: ', 'on');
-			if (connection) connection.send('on');
-		} else {
-			document.getElementById("button").innerHTML = 'Включить измерение';
-			data["impulsIzmerenieEnable"] = 0;
-			console.log('TO Server: ', 'off');
-			if (connection) connection.send('off');
-		}
+	function onCV() {
+		if (document.getElementById("butOnCV").className == "colortextred")  data["impulsIzmerenieEnable"] = 0;
+		else data["impulsIzmerenieEnable"] = 1;
+		updateAllPage();
+		sendData();
 	};
 
-	function predelMaxSet () {
+	function onTG() {
+		if (document.getElementById("butOnTG").className == "colortextred")  data["impulsIzmerenieEnable"] = 0;
+		else  data["impulsIzmerenieEnable"] = 2;
+		updateAllPage();
+		sendData();
+	};
+
+
+	function predelMaxSet() {
 		predelMax = 1*document.getElementById("predelMax").value;
 		predelDelta = predelMax-predelMin;
 		drawStart();
 	};
-	function predelMinSet () {
+	function predelMinSet() {
 		predelMin = 1*document.getElementById("predelMin").value;
 		predelDelta = predelMax-predelMin;
 		drawStart();
 	};
 
+	function predMaxPlus() {
+		let max = 1*document.getElementById("predelMax").value;
+		document.getElementById("predelMax").value = max + 100;
+		predelMaxSet();
+	};
+	function predMaxMinus() {
+		let max = 1*document.getElementById("predelMax").value;
+		let min = 1*document.getElementById("predelMin").value;
+		if (max-100 > min) {
+			document.getElementById("predelMax").value = max - 100;
+			predelMaxSet();
+		}
+	};
+
+	function predMinPlus() {
+		let max = 1*document.getElementById("predelMax").value;
+		let min = 1*document.getElementById("predelMin").value;
+		if (min+100 < max) {
+			document.getElementById("predelMin").value = min + 100;
+			predelMinSet();
+		}
+	};
+	function predMinMinus() {
+		let max = 1*document.getElementById("predelMax").value;
+		let min = 1*document.getElementById("predelMin").value;
+		document.getElementById("predelMin").value = min - 100;
+		predelMinSet();
+	};
 
 </script>
 </body>
