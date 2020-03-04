@@ -34,7 +34,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           Serial.println(data);
           webSocket.sendTXT(num, data);
         }
-        //Serial.printf("WStype_CONNECTED sendSpeedDataEnable [%u][%u][%u][%u][%u]\n", sendSpeedDataEnable[0], sendSpeedDataEnable[1], sendSpeedDataEnable[2], sendSpeedDataEnable[3], sendSpeedDataEnable[4]);
         break;
       }
 
@@ -106,7 +105,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       // send message to client
       // webSocket.sendBIN(num, payload, length);
       break;
-
   }
 
 }
@@ -144,12 +142,6 @@ String serializationToJson_setup()
 }
 
 
-String serializator()
-{
-  DynamicJsonDocument doc(1024);
-}
-
-
 // Проверка состояния соединения с websocket-клиентами. Отключение тех с которыми нет связи.
 void checkPing() {
   //Serial.println("checkPing checkPing checkPing checkPing checkPing");
@@ -159,16 +151,4 @@ void checkPing() {
     //int timeTotal = micros() - timeStart;
     //Serial.printf("TIME ping [%u]: %u\n", nums, timeTotal);
   }
-}
-
-
-void deSerializationFromJson(uint8_t payload)
-{
-  //Serial.println(payload);
-  //Serial.println(*payload);
-  //Serial.println(&payload);
-  //StaticJsonDocument<1024> doc;
-  //DeserializationError error = deserializeJson(doc, payload);
-  //if (error)
-  //Serial.println(F("Failed to deserialization data from client"));
 }
