@@ -2,13 +2,17 @@
    Добавил файловый менеджер
    Добавил обновление через вебстраницу "Системные настройки"
    Автозапуск АР Default, если не найден файл настроек
+   Подключение внешних сигналов:
+    - GPIO14 (D5) - вход импульсов от датчика стенда проверки ЦВ;
+    - GPIO5 (D1) - вход импульсов от датчика стенда ТАХОГЕНЕРАТОРА;
+    - GPIO16 (D0) - вход (без прерывания) от нормально-закрытого контакта ЦВ.
+   Подключение внутренних элементов (для платы типа ESP8266 Witty):
+    - GPIO2 (D4) - голубой wifi светодиод;
+    - GPIO4 (D2) - кнопка, подключена к пину (для платы типа ESP8266 Witty);
+    - GPIO12 (D6) - зеленый цвет RGB-светодиода (для платы типа ESP8266 Witty);
+    - GPIO13 (D7) - синий цвет RGB-светодиода (для платы типа ESP8266 Witty);
+    - GPIO15 (D8) - красный цвет RGB-светодиода (для платы типа ESP8266 Witty).
 */
-
-// кнопка, подключена к пину GPIO 4 (D2)
-// голубой wifi светодиод GPIO 2
-// зеленый светодиод GPIO 12
-// синий светодиод GPIO 13
-// красный светодиод GPIO 15
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -22,7 +26,8 @@
 #define LED_GREEN 12   // пин, зеленого светодиода 
 #define LED_BLUE 13    // пин, синего светодиода
 #define BUTTON 4       // номер пина кнопки GPIO4 (D2)
-#define IMPULS_IN 14          // пин, вход импульсов 
+#define IMPULS_IN_CV 14   // пин, вход импульсов от датчика стенда проверки ЦВ
+#define IMPULS_IN_TG 5    // пин, вход импульсов от датчика стенда проверки ЦВ
 
 String str1 = "Text2";
 
@@ -49,18 +54,9 @@ volatile bool impulsCountedEnd = 1;
 bool impulsIzmerenieEnable = 0;
 bool impulsTimerEnable = 0;
 
-
-
-int timeT1 = millis();
-int timeT2 = millis();
-
 WebSocketsServer webSocket(81);
 ESP8266WebServer server(80);
-
-unsigned int t1 = micros();
-unsigned int t2 = micros();
-unsigned int time_msg1;
-unsigned int time_msg2;
+//int timeT1 = millis();
 
 void ICACHE_RAM_ATTR bitTxIsr() {
   impulsCountedEnd = 1;
@@ -71,17 +67,16 @@ void  ICACHE_RAM_ATTR interruptFunction() {
 }
 
 void setup() {
-  delay(2);
   Serial.begin(115200);
   Serial.println("");
-  Serial.println("Setup");
   pinMode(LED_WIFI, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
-  pinMode(IMPULS_IN, INPUT_PULLUP);
+  pinMode(IMPULS_IN_CV, INPUT_PULLUP);
+  pinMode(IMPULS_IN_TG, INPUT_PULLUP);
   digitalWrite(LED_WIFI, HIGH);
   digitalWrite(LED_GREEN, LOW);
-  printChipInfo();
+  //printChipInfo();
 
   SPIFFS.begin();
   //scanAllFile();
@@ -109,11 +104,9 @@ void setup() {
 
   webServer_init();      //инициализация HTTP интерфейса
   webSocket_init();      //инициализация webSocket интерфейса
-
-  timer1_isr_init();
+  timer1_isr_init();     //инициализация таймера
   timer1_attachInterrupt(bitTxIsr);
 }
-
 
 
 void loop() {
@@ -126,19 +119,20 @@ void loop() {
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
     timer1_write(1250000);    //5000 едениц = 1мс; 1250000 = 250 мс
-    attachInterrupt (digitalPinToInterrupt (IMPULS_IN), interruptFunction, FALLING);
-    impulsCountedEnd = 0;
-    impulsTimerEnable = 1;
-    impulsCount = 0;
+    //Вкл. прерывания по переднему фронту на входе GPIO
+    attachInterrupt (digitalPinToInterrupt (IMPULS_IN_CV), interruptFunction, FALLING);
+    impulsCountedEnd = 0;     
+    impulsTimerEnable = 1;    //таймер запущен
+    impulsCount = 0;          //счетчик импульсов сбросить в 0
   }
 
   //Вычисление частоты импульсов
   if ( impulsCountedEnd == 1 && impulsTimerEnable == 1) {
-    detachInterrupt(digitalPinToInterrupt (IMPULS_IN));
+    detachInterrupt(digitalPinToInterrupt (IMPULS_IN_CV));
 
     //Определяем количество импульсов за 1 сек, т.е ГЦ
     //Serial.println(impulsCount);
-    impulsCountArray[indArray] = impulsCount * 100;
+    impulsCountArray[indArray] = impulsCount * 10;
     impulsFreq = (impulsCountArray[0] + impulsCountArray[1] + impulsCountArray[2]) / 3;
     indArray ++;
     if (indArray == 3)  indArray = 0;
@@ -156,7 +150,7 @@ void loop() {
           webSocket.broadcastTXT(data);
           int T_broadcastTXT = micros() - startT_broadcastTXT;
           if (T_broadcastTXT > 100000)  checkPing();
-          timeT1 = millis();
+          //timeT1 = millis();
           //}
         }
       }

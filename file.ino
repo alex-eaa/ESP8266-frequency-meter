@@ -1,4 +1,3 @@
-
 //START Чтение JSON данных из файла
 bool loadConfiguration()
 {
