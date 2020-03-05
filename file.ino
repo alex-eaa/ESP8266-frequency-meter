@@ -8,7 +8,7 @@ bool loadConfiguration()
     return 0;
   }
 
-  DynamicJsonDocument doc(1024);   // Use arduinojson.org/v6/assistant to compute the capacity.
+  DynamicJsonDocument doc(1024); 
 
   DeserializationError error = deserializeJson(doc, file);
   if (error) {
@@ -16,33 +16,29 @@ bool loadConfiguration()
     return 1;
   }
 
-  // Copy values from the JsonDocument to the Config
+  // Copy values from the JsonDocument to the value config
   wifiAP_mode = doc["wifiAP_mode"];    //Serial.println(wifiAP_mode);
 
   String stemp = doc["p_ssid"].as<String>();
   p_ssid = new char [stemp.length() + 1];
   stemp.toCharArray(p_ssid, stemp.length() + 1);
-  Serial.print(F("p_ssid="));   Serial.println(p_ssid);
+  //Serial.print(F("p_ssid="));   Serial.println(p_ssid);
 
   stemp = doc["p_password"].as<String>();
   p_password = new char [stemp.length() + 1];
   stemp.toCharArray(p_password, stemp.length() + 1);
-  Serial.print(F("p_password="));   Serial.println(p_password);
+  //Serial.print(F("p_password="));   Serial.println(p_password);
 
   stemp = doc["p_passwordAP"].as<String>();
   p_passwordAP = new char [stemp.length() + 1];
   stemp.toCharArray(p_passwordAP, stemp.length() + 1);
-  Serial.print(F("p_passwordAP="));   Serial.println(p_passwordAP);
+  //Serial.print(F("p_passwordAP="));   Serial.println(p_passwordAP);
 
   stemp = doc["p_ssidAP"].as<String>();
   p_ssidAP = new char [stemp.length() + 1];
   stemp.toCharArray(p_ssidAP, stemp.length() + 1);
-  Serial.print(F("p_ssidAP="));   Serial.println(p_ssidAP);
+  //Serial.print(F("p_ssidAP="));   Serial.println(p_ssidAP);
 
-  //strcpy(p_ssidAP, doc["p_ssidAP"]);    //Serial.println(p_ssidAP);
-  //strcpy(p_passwordAP, doc["p_passwordAP"]);    //Serial.println(p_passwordAP);
-  //strcpy(p_ssid, doc["p_ssid"]);    //Serial.println(p_ssid);
-  //strcpy(p_password, doc["p_password"]);    //Serial.println(p_password);
   ip[0] = doc["ip"][0];    //Serial.println(ip[0]);
   ip[1] = doc["ip"][1];    //Serial.println(ip[1]);
   ip[2] = doc["ip"][2];    //Serial.println(ip[2]);
@@ -55,7 +51,6 @@ bool loadConfiguration()
   gtw[1] = doc["gtw"][1];    //Serial.println(gtw[1]);
   gtw[2] = doc["gtw"][2];    //Serial.println(gtw[2]);
   gtw[3] = doc["gtw"][3];    //Serial.println(gtw[3]);
-  str1 = doc["str1"].as<String>();
 
   file.close();
   return 1;
@@ -82,7 +77,6 @@ void saveConfiguration()
   doc["p_passwordAP"] = p_passwordAP;
   doc["p_ssid"] = p_ssid;
   doc["p_password"] = p_password;
-  doc["str1"] = str1;
   JsonArray ipJsonArray = doc.createNestedArray("ip");
   for (int n = 0; n < 4; n++)  ipJsonArray.add(ip[n]);
   JsonArray sbntJsonArray = doc.createNestedArray("sbnt");
@@ -94,7 +88,6 @@ void saveConfiguration()
   if (serializeJson(doc, file) == 0) {
     Serial.println(F("Failed to write to file"));
   }
-  //serializeJson(doc, Serial) == 0)
   Serial.println(F("Save config complited."));
   file.close();
 }
@@ -116,8 +109,6 @@ void printFile(const char *filename)
     Serial.print((char)file.read());
   }
   Serial.println();
-
-  // Close the file
   file.close();
 }
 

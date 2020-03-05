@@ -14,8 +14,8 @@
 		#tr1 {vertical-align: top;}	
 		#tr3 {vertical-align: bottom;}	
 		#tr2 {text-align: center;}
-		.colortextred {color:red;}
-		.colortextgray {color:gray;}
+		.colortextred {color:red; font-size:24px;}
+		.colortextgray {color:gray; font-size:24px;}
 	</style>
 </head>
 
@@ -62,8 +62,6 @@
 <script>
 	let canvasAutoHeight = document.documentElement.clientHeight - document.getElementById("top").offsetHeight - document.getElementById("menu").offsetHeight - 3*10 - 3*5 - 20;
 	document.getElementById("myCanvas").height = canvasAutoHeight;
-	//alert( window.innerHeight);
-	//alert( document.documentElement.clientHeight );
 
 	let data = {
 		page: "index",
@@ -141,40 +139,37 @@
 	};
 
 	function sendData () {
-		let msg = '{"impulsIzmerenieEnable":' + data["impulsIzmerenieEnable"] + '}';
-		console.log('TO Server: ', msg);
-		if (connection) connection.send(msg);
+		console.log('TO Server: ', JSON.stringify( data ));
+		if (connection) connection.send(JSON.stringify( data ));
 	};
 
 
-		drawFrame();
-		drawStart();
-		updateAllPage();
-		//console.log('URL: ', 'ws://' + location.host + ':81/');
-		//let connection = new WebSocket('ws://192.168.43.242:81/index.htm', ['arduino']);
-		let connection = new WebSocket('ws://' + location.host + ':81/index.htm', ['arduino']);
+	drawFrame();
+	drawStart();
+	updateAllPage();
+	let connection = new WebSocket('ws://' + location.host + ':81/index.htm', ['arduino']);
 	
-		connection.onopen = function () {
-			//connection.send('ping');		
-		};
+	connection.onopen = function () {
+		//connection.send('ping');		
+	};
 
-		connection.onerror = function (error) {
-			console.log('WebSocket Error ', error);
-			alert("Ошибка " + error.message);
-		};
+	connection.onerror = function (error) {
+		console.log('WebSocket Error ', error);
+		alert("Ошибка " + error.message);
+	};
 
-		connection.onmessage = function (e) {
-			console.log('FROM Server: ', e.data);
-			let obj = JSON.parse(e.data);
-			for (x in obj) {
-				if ( data[x]  != null ) {
-					data[x] = obj[x];
-					updateAllPage();
-					drawFrame();
-				}
+	connection.onmessage = function (e) {
+		console.log('FROM Server: ', e.data);
+		let obj = JSON.parse(e.data);
+		for (x in obj) {
+			if ( data[x]  != null ) {
+				data[x] = obj[x];
+				data["freq"] = data["freq"]*4/10;
+				updateAllPage();
+				drawFrame();
 			}
-			data["freq"] = data["freq"]*4/10;
-		};
+		}
+	};
 
 
 	function onCV() {
@@ -196,11 +191,13 @@
 		predelMax = 1*document.getElementById("predelMax").value;
 		predelDelta = predelMax-predelMin;
 		drawStart();
+		drawFrame();
 	};
 	function predelMinSet() {
 		predelMin = 1*document.getElementById("predelMin").value;
 		predelDelta = predelMax-predelMin;
 		drawStart();
+		drawFrame();
 	};
 
 	function predMaxPlus() {
@@ -226,10 +223,11 @@
 		}
 	};
 	function predMinMinus() {
-		let max = 1*document.getElementById("predelMax").value;
 		let min = 1*document.getElementById("predelMin").value;
-		document.getElementById("predelMin").value = min - 100;
-		predelMinSet();
+		if (min-100 > 0) {
+			document.getElementById("predelMin").value = min - 100;
+			predelMinSet();
+		}
 	};
 
 </script>

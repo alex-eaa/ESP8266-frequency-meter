@@ -66,10 +66,6 @@ void set_staticIP()
   IPAddress ipAdr(ip[0], ip[1], ip[2], ip[3]);
   IPAddress gateway(gtw[0], gtw[1], gtw[2], gtw[3]);
   IPAddress subnet(sbnt[0], sbnt[1], sbnt[2], sbnt[3]);
-  //Serial.println("");
-  //Serial.print("Set IP address: ");  Serial.println(ipAdr);
-  //Serial.print("Set Subnet: ");      Serial.println(subnet);
-  //Serial.print("Set IP gateway: ");  Serial.println(gateway);
   WiFi.config(ipAdr, gateway, subnet);
 }
 

@@ -27,9 +27,8 @@
 #define LED_BLUE 13    // пин, синего светодиода
 #define BUTTON 4       // номер пина кнопки GPIO4 (D2)
 #define IMPULS_IN_CV 14   // пин, вход импульсов от датчика стенда проверки ЦВ
-#define IMPULS_IN_TG 5    // пин, вход импульсов от датчика стенда проверки ЦВ
-
-String str1 = "Text2";
+#define IMPULS_IN_TG 5    // пин, вход импульсов от датчика стенда проверки ТАХОГЕНЕРАТОРА
+#define CONTACT_IN 16     // пин, вход (без прерывания) от нормально-закрытого контакта ЦВ
 
 bool wifiAP_mode = 0;
 char *p_ssidAP = "AP";             //SSID-имя вашей сети
@@ -51,8 +50,9 @@ volatile unsigned int impulsCount = 0;
 unsigned int impulsCountArray[] = {0, 0, 0};
 int indArray = 0;
 volatile bool impulsCountedEnd = 1;
-bool impulsIzmerenieEnable = 0;
+int impulsIzmerenieEnable = 0;
 bool impulsTimerEnable = 0;
+int impulsGpioIn = IMPULS_IN_CV;
 
 WebSocketsServer webSocket(81);
 ESP8266WebServer server(80);
@@ -74,6 +74,7 @@ void setup() {
   pinMode(BUTTON, INPUT_PULLUP);
   pinMode(IMPULS_IN_CV, INPUT_PULLUP);
   pinMode(IMPULS_IN_TG, INPUT_PULLUP);
+  pinMode(CONTACT_IN, INPUT_PULLUP);
   digitalWrite(LED_WIFI, HIGH);
   digitalWrite(LED_GREEN, LOW);
   //printChipInfo();
@@ -115,20 +116,22 @@ void loop() {
   server.handleClient();
 
   // Активация/деактивация таймера с прерыванием если измерение разрешено/запрещено
-  if ( impulsIzmerenieEnable == 1 && impulsTimerEnable == 0) {
+  if ( impulsIzmerenieEnable != 0 && impulsTimerEnable == 0) {
+    if (impulsIzmerenieEnable == 1)  impulsGpioIn = IMPULS_IN_CV;
+    if (impulsIzmerenieEnable == 2)  impulsGpioIn = IMPULS_IN_TG;
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
     timer1_write(1250000);    //5000 едениц = 1мс; 1250000 = 250 мс
-    //Вкл. прерывания по переднему фронту на входе GPIO
-    attachInterrupt (digitalPinToInterrupt (IMPULS_IN_CV), interruptFunction, FALLING);
-    impulsCountedEnd = 0;     
+    //Вкл. прерывания по переднему фронту на входе IMPULS_IN_CV или IMPULS_IN_TG
+    attachInterrupt (digitalPinToInterrupt (impulsGpioIn), interruptFunction, FALLING);
+    impulsCountedEnd = 0;
     impulsTimerEnable = 1;    //таймер запущен
     impulsCount = 0;          //счетчик импульсов сбросить в 0
   }
 
   //Вычисление частоты импульсов
   if ( impulsCountedEnd == 1 && impulsTimerEnable == 1) {
-    detachInterrupt(digitalPinToInterrupt (IMPULS_IN_CV));
+    detachInterrupt(digitalPinToInterrupt (impulsGpioIn));
 
     //Определяем количество импульсов за 1 сек, т.е ГЦ
     //Serial.println(impulsCount);
@@ -137,7 +140,7 @@ void loop() {
     indArray ++;
     if (indArray == 3)  indArray = 0;
 
-    Serial.println(impulsFreq);
+    //Serial.println(impulsFreq);
     //Отправка Speed данных клиентам каждые speedT миллисекунд, при условии что данныее обновились и клиенты подключены
     if (true) {
       if (sendSpeedDataEnable[0] || sendSpeedDataEnable[1] || sendSpeedDataEnable[2] || sendSpeedDataEnable[3] || sendSpeedDataEnable[4] ) {
@@ -173,7 +176,6 @@ void printConfiguration () {
   Serial.print(F("ip="));    Serial.print(ip[0]);   Serial.print(":");  Serial.print(ip[1]);  Serial.print(":");  Serial.print(ip[2]);  Serial.print(":");  Serial.println(ip[3]);
   Serial.print(F("sbnt="));  Serial.print(sbnt[0]); Serial.print(":");  Serial.print(sbnt[1]);  Serial.print(":");  Serial.print(sbnt[2]);  Serial.print(":");  Serial.println(sbnt[3]);
   Serial.print(F("gtw="));   Serial.print(gtw[0]);  Serial.print(":");  Serial.print(gtw[1]);  Serial.print(":");  Serial.print(gtw[2]);  Serial.print(":");  Serial.println(gtw[3]);
-  Serial.print(F("str1="));   Serial.println(str1);
 }
 
 void printChipInfo() {

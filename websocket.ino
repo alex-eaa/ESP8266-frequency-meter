@@ -52,8 +52,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           }
 
           if (doc["page"].as<String>() == "index") {
-            //str1 = doc["str1"].as<String>();   //Serial.println(str1);
-            //var2 = doc["var2"];                //Serial.println(var2);
+            impulsIzmerenieEnable = doc["impulsIzmerenieEnable"];      //Serial.println(impulsIzmerenieEnable);
             //saveConfiguration();
           }
           else if (doc["page"].as<String>() == "setup") {
@@ -72,10 +71,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             stemp = doc["p_passwordAP"].as<String>();
             p_passwordAP = new char [stemp.length() + 1];
             stemp.toCharArray(p_passwordAP, stemp.length() + 1);
-            //strcpy(p_ssid, doc["p_ssid"]);              //Serial.println(p_ssid);
-            //strcpy(p_password, doc["p_password"]);      //Serial.println(p_password);
-            //strcpy(p_ssidAP, doc["p_ssidAP"]);          //Serial.println(p_ssidAP);
-            //strcpy(p_passwordAP, doc["p_passwordAP"]);  //Serial.println(p_passwordAP);
             ip[0] = doc["ip"][0];    //Serial.println(ip[0]);
             ip[1] = doc["ip"][1];    //Serial.println(ip[1]);
             ip[2] = doc["ip"][2];    //Serial.println(ip[2]);
@@ -92,10 +87,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             saveConfiguration();
           }
         }
-        // send message to client
-        // webSocket.sendTXT(num, "message here");
-        // send data to all connected clients
-        // webSocket.broadcastTXT("message here");
         break;
       }
 
