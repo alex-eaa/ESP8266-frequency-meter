@@ -121,9 +121,9 @@ void loop() {
     if (impulsIzmerenieEnable == 2)  impulsGpioIn = IMPULS_IN_TG;
     //Вкл. прерывания по таймеру
     timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
-    timer1_write(1250000);    //5000 едениц = 1мс; 1250000 = 250 мс
-    //Вкл. прерывания по переднему фронту на входе IMPULS_IN_CV или IMPULS_IN_TG
-    attachInterrupt (digitalPinToInterrupt (impulsGpioIn), interruptFunction, FALLING);
+    timer1_write(1000000);    //5000 едениц = 1мс; 1000000 = 200 мс
+    //Вкл. прерывания по обоим фронтам на входе IMPULS_IN_CV или IMPULS_IN_TG
+    attachInterrupt (digitalPinToInterrupt (impulsGpioIn), interruptFunction, CHANGE  );
     impulsCountedEnd = 0;
     impulsTimerEnable = 1;    //таймер запущен
     impulsCount = 0;          //счетчик импульсов сбросить в 0
@@ -134,6 +134,7 @@ void loop() {
     detachInterrupt(digitalPinToInterrupt (impulsGpioIn));
 
     //Определяем количество импульсов за 1 сек, т.е ГЦ
+    //Serial.print("iCnt=");
     //Serial.println(impulsCount);
     impulsCountArray[indArray] = impulsCount * 10;
     impulsFreq = (impulsCountArray[0] + impulsCountArray[1] + impulsCountArray[2]) / 3;
