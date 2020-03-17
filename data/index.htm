@@ -7,8 +7,10 @@
 	<link rel='stylesheet' href='style.css'>	
 	<style type="text/css">
 		input[type=number],button {width:3em; font-size:18px;}
+		#butreductor{width:auto; font-size:12px;}
 		#myCanvas {background-color:#fff; border:0px solid #ccc;}
-		h1 {font-size:4em;}
+		h1 {font-size:4em; margin:0 0 10px 0}
+		h2 {margin:0 0 10px 0}
 		table {width: 100%;}
 		#stolb1 {width: 155px;}	
 		#tr1 {vertical-align: top;}	
@@ -16,6 +18,7 @@
 		#tr2 {text-align: center;}
 		.colortextred {color:red; font-size:24px;}
 		.colortextgray {color:gray; font-size:24px;}
+		.hide {display: none;}
 	</style>
 </head>
 
@@ -38,11 +41,16 @@
 				<input type='number' onchange="predelMaxSet()" id='predelMax' name='predelMax' value='2000'>
 				<p><button onclick="predMaxMinus()">-100</button>
 				<button onclick="predMaxPlus()">+100</button></p>
+				<p><button id='butreductor' onclick="butreductor()">Обороты на редукторе</button></p>
 
 			</td>
 		</tr>
 		<tr id='tr2'>
 			<td>
+				<div id='reductor' class='hide'>
+					<h2>На редукторе</h2>
+					<h2 id='hzreducror'>0</h2>
+				</div>
 				<h1 id='hz'>0</h1>
 				<button id='butOnCV' class="colortextred" onclick="onCV()">ЦВ</button>
 				<button id='butOnTG' class="colortextgray" onclick="onTG()">ТГ</button>
@@ -126,6 +134,7 @@
 	function updateAllPage() {
 		//document.getElementById("hz").innerHTML = data["freq"].toFixed(0);
 		document.getElementById("hz").innerHTML = Math.floor(data["freq"]);
+		document.getElementById("hzreductor").innerHTML = Math.floor(data["freq"]/15.5);
 		if ( data["impulsIzmerenieEnable"] == 0 ) {
 			document.getElementById("butOnCV").className = "colortextgray";
 			document.getElementById("butOnTG").className = "colortextgray";
@@ -184,6 +193,11 @@
 		else  data["impulsIzmerenieEnable"] = 2;
 		updateAllPage();
 		sendData();
+	};
+
+	function butreductor() {
+		if (document.getElementById("reductor").className == "hide")  document.getElementById("reductor").className = "";
+		else  document.getElementById("reductor").className = "hide";
 	};
 
 
