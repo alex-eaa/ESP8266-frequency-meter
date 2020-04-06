@@ -3,61 +3,61 @@
 <head>
 	<meta http-equiv='Content-type' content='text/html; charset=utf-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-	<title>Настройка системы</title>
+	<title>Настройка сети</title>
 	<link rel='stylesheet' href='style.css'>
 </head>
 
 <body>
-<h3 class='top'>Настройка системы</h3>
-<div class='menu'>
-	<a href='index.htm'>Главная</a>
-	<a href='setup.htm'>Системные настройки</a>
-	<a href='edit.htm'>Файлы</a>
-</div>
 
-<center>
-<div class='content'>
-
-<h3>Настройка WiFi</h3>
-
-<h4><input type='radio' id='wifiAP_mode_off' name='wifiAP_mode'/> Режим клиента</h4>
-
-<p>Имя сети: <input type='text' id='p_ssid' name='p_ssid' maxlength='32' value=''/></p>
-<p>Пароль сети: <input type='text' id='p_password' name='p_password' maxlength='64' value=''/></p>
-
-<p>IP-адрес: <input type='text' size='3' id='ip_0' name='ip_0' maxlength='3' value=''/>
-:<input type='text' id='ip_1' name='ip_1' size='3' maxlength='3' value=''/>
-:<input type='text' id='ip_2' name='ip_2' size='3' maxlength='3' value=''/>
-:<input type='text' id='ip_3' name='ip_3' size='3' maxlength='3' value=''/>
-</p>
-
-<p>Маска подсети: <input type='text' size='3' id='sbnt_0' name='sbnt_0' maxlength='3' value=''/>
-:<input type='text' id='sbnt_1' name='sbnt_1' size='3' maxlength='3' value=''/>
-:<input type='text' id='sbnt_2' name='sbnt_2' size='3' maxlength='3' value=''/>
-:<input type='text' id='sbnt_3' name='sbnt_3' size='3' maxlength='3' value=''/>
-</p>
-
-<p>Основной шлюз: <input type='text' size='3' id='gtw_0' name='gtw_0' maxlength='3' value=''/>
-:<input type='text' id='gtw_1' name='gtw_1' size='3' maxlength='3' value=''/>
-:<input type='text' id='gtw_2' name='gtw_2' size='3' maxlength='3' value=''/>
-:<input type='text' id='gtw_3' name='gtw_3' size='3' maxlength='3' value=''/>
-</p>
-
-<h4><input type='radio' id='wifiAP_mode_on' name='wifiAP_mode'/> Режим точки доступа</h4>
-
-<p>Имя сети: <input type='text' id='p_ssidAP' name='p_ssidAP' maxlength='32' value=''/></p>
-<p>Пароль сети: <input type='text' id='p_passwordAP' name='p_passwordAP' maxlength='64' value=''/></p>
-
-<p><button onclick="sendData()">Сохранить</button></p>
-<p><button onclick="sendReset()">Перезагрузить</button></p>
+<div id="container">
+	<ul id="menu">
+		<li><div id="hamburger"><span class="hamburger"></span></div>
+			<ul><li><a href="index.htm">Главная</a></li>
+				<li><a href="setup.htm">Настройка сети</a></li>
+				<li><a href="edit.htm">Файлы</a></li>
+				<li><a href="update.htm">Обновление</a></li>
+			</ul>
+		</li>
+	</ul>
+	<p>Настройка сети</p>
 </div>
 
 <div class='content'>
-    <h3>Обновление прошивки:</h3>
-    <form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br>
-</div>
+	<h3>Настройка WiFi</h3>
+	<h4><input type='radio' id='wifiAP_mode_off' name='wifiAP_mode'/> Режим клиента</h4>
 
-</center>
+	<p>Имя сети: <input type='text' id='p_ssid' name='p_ssid' maxlength='32' value=''/></p>
+	<p>Пароль сети: <input type='text' id='p_password' name='p_password' maxlength='64' value=''/></p>
+
+	<p>IP-адрес: <input type='text' size='3' id='ip_0' name='ip_0' maxlength='3' value=''/>
+	:<input type='text' id='ip_1' name='ip_1' size='3' maxlength='3' value=''/>
+	:<input type='text' id='ip_2' name='ip_2' size='3' maxlength='3' value=''/>
+	:<input type='text' id='ip_3' name='ip_3' size='3' maxlength='3' value=''/>
+	</p>
+
+	<p>Маска подсети: <input type='text' size='3' id='sbnt_0' name='sbnt_0' maxlength='3' value=''/>
+	:<input type='text' id='sbnt_1' name='sbnt_1' size='3' maxlength='3' value=''/>
+	:<input type='text' id='sbnt_2' name='sbnt_2' size='3' maxlength='3' value=''/>
+	:<input type='text' id='sbnt_3' name='sbnt_3' size='3' maxlength='3' value=''/>
+	</p>
+
+	<p>Основной шлюз: <input type='text' size='3' id='gtw_0' name='gtw_0' maxlength='3' value=''/>
+	:<input type='text' id='gtw_1' name='gtw_1' size='3' maxlength='3' value=''/>
+	:<input type='text' id='gtw_2' name='gtw_2' size='3' maxlength='3' value=''/>
+	:<input type='text' id='gtw_3' name='gtw_3' size='3' maxlength='3' value=''/>
+	</p>
+
+	<hr>
+	<h4><input type='radio' id='wifiAP_mode_on' name='wifiAP_mode'/> Режим точки доступа</h4>
+
+	<p>Имя сети: <input type='text' id='p_ssidAP' name='p_ssidAP' maxlength='32' value=''/></p>
+	<p>Пароль сети: <input type='text' id='p_passwordAP' name='p_passwordAP' maxlength='64' value=''/></p>
+
+	<hr>
+	<p><button onclick="sendData()">Сохранить</button></p>
+	<p><button onclick="sendReset()">Перезагрузить</button></p>
+	<p><button onclick="sendResetStat()">Сброс статистики</button></p>
+</div>
 
 <script>
 	let data = {
@@ -71,6 +71,7 @@
 		p_passwordAP: "",
 		wifiAP_mode: 0
 	};
+
 
 	function updateAllData() {
 		data["ip"][0] = (document.getElementById('ip_0').value);
@@ -127,14 +128,22 @@
 	};
 
 	function sendReset () {
-		let msg = 'RESET';
-		console.log('TO Server: ', msg);
-		connection.send(msg);
+		if (confirm("Вы хотите перезагрузить устройство?")) {
+			let msg = 'RESET';
+			console.log('TO Server: ', msg);
+			connection.send(msg);
+		}
 	};
 
-		
+	function sendResetStat () {
+		if (confirm("Вы подтверждаете сброс статистики? После сброса информацию невозможно будет восстановить")) {
+			let msg = 'RESET_STAT';
+			console.log('TO Server: ', msg);
+			connection.send(msg);
+		}
+	};
 
-	//let connection = new WebSocket('ws://192.168.43.242:81/setup.htm', ['arduino']);
+
 	let connection = new WebSocket('ws://' + location.host + ':81/setup.htm', ['arduino']);
 	console.log(connection);
 	
@@ -188,7 +197,6 @@
 			}
 		}
 	};
-
 
 
 </script>

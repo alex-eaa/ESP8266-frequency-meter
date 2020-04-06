@@ -23,11 +23,17 @@
 </head>
 
 <body>
-<h3 class='top' id='top'>Главная</h3>
-<div class='menu' id='menu'>
-	<a href='index.htm'>Главная</a>
-	<a href='setup.htm'>Системные настройки</a>
-	<a href='edit.htm'>Файлы</a>
+<div id="container">
+	<ul id="menu">
+		<li><div id="hamburger"><span class="hamburger"></span></div>
+			<ul><li><a href="index.htm">Главная</a></li>
+				<li><a href="setup.htm">Настройка сети</a></li>
+				<li><a href="edit.htm">Файлы</a></li>
+				<li><a href="update.htm">Обновление</a></li>
+			</ul>
+		</li>
+	</ul>
+	<p>Главная</p>
 </div>
 
 
@@ -68,7 +74,7 @@
 
 
 <script>
-	let canvasAutoHeight = document.documentElement.clientHeight - document.getElementById("top").offsetHeight - document.getElementById("menu").offsetHeight - 3*10 - 3*5 - 20;
+	let canvasAutoHeight = document.documentElement.clientHeight - document.getElementById("container").offsetHeight - 3*10 - 3*5 - 20;
 	document.getElementById("myCanvas").height = canvasAutoHeight;
 
 	let data = {
@@ -132,7 +138,6 @@
 
 
 	function updateAllPage() {
-		//document.getElementById("hz").innerHTML = data["freq"].toFixed(0);
 		document.getElementById("hz").innerHTML = Math.floor(data["freq"]);
 		document.getElementById("hzreductor").innerHTML = Math.floor(data["freq"]/15.5);
 		if ( data["impulsIzmerenieEnable"] == 0 ) {

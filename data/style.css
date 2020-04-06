@@ -1,59 +1,204 @@
+
 body{
 max-width:640px;
 margin:auto;
-padding:0 5px;
-color:black;
-background:#fff;
+padding: 10px 6px;
 font-size:14px;
 font-family:arial;
 }
-img{
-border:1;
-}
-.top{
-color:#888;
-height: 28px;
-background:url(logo.gif) no-repeat 10px 0;
-padding:3px 0 0 55px;
-font-style:italic;
-font-size:18px;
-margin:0 0 10px 0;
-}
-.top img{
-vertical-align:middle;
-}
-.menu{
-border-top:#fab548 5px solid;
-background:#efeff0 url(logo.gif) no-repeat 10px 10px;
-padding:5px 5px 5px 80px;
-margin:0 0 10px 0;
-border-radius:5px;
-}
-.menu a,
-.menu a:link{
-display:block;
-font-weight:bold;
-text-decoration:none;
-color:#1486ba;
-padding:0 5px 1px 10px;
-font-size:13px;
-border-radius:3px;
-margin:0 0 1px 0;
-border-bottom:#d6d9da 1px solid;
-}
-.menu a:hover{
-background:#d6d9da;
-}
+
 .content{
-background:#eee;
+border:#d6d9da 0.5px solid;
 border-radius:5px;
-border-top:#1486ba 5px solid;
-padding:5px 10px;
-margin:0 0 10px 0;
+background:#fff;
+margin-bottom: 10px;
+padding:5px 15px;
+box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+z-index:1;
+position: relative;
+animation-name: contentAnime;
+animation-duration: .5s;
+animation-timing-function: ease-out;
 }
-#y, #m, #d, #h, #min, #s, #MDBError{
-visibility: hidden;
+
+@keyframes contentAnime{
+	from{
+		-webkit-transform: scaleY(0);
+		-ms-transform: scaleY(0);
+		transform: scaleY(0);
+	}
+	to{
+		-webkit-transform: scaleY(1);
+		-ms-transform: scaleY(1);
+		transform: scaleY(1);
+	}
 }
-input[type="number"] {
-  width: 100%;
-}
+
+
+
+/*Меню*/
+	#container {
+		height: 35px;
+		border: #b4b4b4 0.5px solid;
+		position: relative;
+		z-index:2;
+		padding-bottom: 0px;
+		margin-bottom: 10px;
+		vertical-align:bottom;
+		border-radius: 5px;
+		background: #efefef;
+		box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+		animation-name: containerAnime;
+		animation-duration: .5s;
+		animation-timing-function: ease-out;
+	}
+	@keyframes containerAnime{
+		from{top:-46px;}
+		to{top:0;}
+	}
+
+	#container p{
+		color:#0f6389;
+		font-style:italic;
+		font-size:24px;
+		margin:0 0 10px 0;
+		padding:  4px 0 0 60px;
+	}
+
+	#menu, #menu ul {
+		list-style: none;
+		padding-left: 0;
+		margin: 0;
+	}
+
+	#menu > li {
+		height: 34px;
+
+		float: left;
+		position: relative;
+		perspective: 1000px;
+		border-radius: 5px;	
+	}
+
+	#menu a{
+		display: block;
+		position: relative;
+		z-index: 10;
+		padding: 13px 20px 13px 20px;
+		text-decoration: none;
+		color: rgba(75,75,75,1);
+		line-height: 1;
+		font-weight: 600;
+		font-size: 14px;
+		letter-spacing: -.05em;
+		background: transparent;		
+		text-shadow: 0 1px 1px rgba(255,255,255,.9);
+		transition: all .25s ease-in-out;
+		border-radius: 5px;	
+	}
+
+	#menu > li:hover > a{
+		background: #333;
+		color: rgba(0,223,252,1);
+		text-shadow: none;
+		border-radius: 5px;	
+	}
+
+	#menu li ul  {
+		position: absolute;
+		left: 0;
+		z-index: 200;
+		width: 200px;
+		padding: 0;
+		opacity: 0;
+		visibility: hidden;
+		border-radius:5px;
+		background: transparent;
+		overflow: hidden;
+		transform-origin: 50% 0%;
+	}
+
+	#menu li:hover ul {
+		padding: 15px 0;
+		background: #333;
+		opacity: 1;
+		visibility: visible;
+		box-shadow: 1px 1px 7px rgba(0,0,0,.5);
+		animation-name: swingdown;
+		animation-duration: 1s;
+		animation-timing-function: ease;
+
+	}
+
+	@keyframes swingdown {
+		0% {
+			opacity: .99999;
+			transform: rotateX(90deg);
+		}
+
+		30% {			
+			transform: rotateX(-20deg) rotateY(5deg);
+			animation-timing-function: ease-in-out;
+		}
+
+		65% {
+			transform: rotateX(20deg) rotateY(-3deg);
+			animation-timing-function: ease-in-out;
+		}
+
+		100% {
+			transform: rotateX(0);
+			animation-timing-function: ease-in-out;
+		}
+	}
+
+	#menu li li a {
+		padding-left: 15px;
+		font-weight: 400;
+		color: #ddd;
+		text-shadow: none;
+		border-top: dotted 1px transparent;
+		border-bottom: dotted 1px transparent;
+		transition: all .15s linear;
+	}
+
+	#menu li li a:hover {
+		color: rgba(0,223,252,1);
+		border-top: dotted 1px rgba(255,255,255,.15);
+		border-bottom: dotted 1px rgba(255,255,255,.15);
+		background: rgba(0,223,252,.02);
+	}
+
+
+
+
+	#hamburger {
+		padding-top: 12px;
+		width: 45px;
+		height: 23px;
+		display: block;
+		position: relative;	
+		transition: all .25s ease-in-out;
+		border-radius: 5px;	
+	}
+	#hamburger:hover {
+		background: #333;
+		color: rgba(0,223,252,1);
+		border-radius: 5px;	
+	}
+	.hamburger {
+	     position: relative;
+	     display: block;
+	     width: 18px;
+	     height: 8px;
+	     margin: auto;
+	     border-top: 2px solid #0f6389;
+	     border-bottom: 2px solid #0f6389;
+	}
+	.hamburger:before {
+	     content: "";
+	     position: absolute;
+	     top: 3px;
+	     width: 100%;
+	     border-top: 2px solid #0f6389;
+	}
