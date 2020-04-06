@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<title>Обновление</title>
+	<link rel='stylesheet' href='style.css'>
+</head>
+
+<body>
+
+<div id="container">
+	<ul id="menu">
+		<li><div id="hamburger"><span class="hamburger"></span></div>
+			<ul><li><a href="index.htm">Главная</a></li>
+				<li><a href="setup.htm">Настройка сети</a></li>
+				<li><a href="edit.htm">Файлы</a></li>
+				<li><a href="update.htm">Обновление</a></li>
+			</ul>
+		</li>
+	</ul>
+	<p>Обновление прошивки</p>
+</div>
+
+<div class='content'>
+    <h3>Обновление прошивки:</h3>
+    <form method='POST' onSubmit="return window.confirm('ОБНОВИТЬ ПРОШИВКУ?');" action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br>
+</div>
+<script></script>
+</body>
+</html>
