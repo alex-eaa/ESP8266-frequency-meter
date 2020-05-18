@@ -156,7 +156,8 @@
 
 	function sendData () {
 		console.log('TO Server: ', JSON.stringify( data ));
-		ws.send(JSON.stringify( data ));
+		if (ws)  ws.send(JSON.stringify( data ));
+		else console.log('WebSocket not connected!');
 	};
 
 
