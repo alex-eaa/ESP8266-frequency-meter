@@ -74,10 +74,12 @@
 
 
 <script>
+	var deviceIp="";
+
 	let canvasAutoHeight = document.documentElement.clientHeight - document.getElementById("container").offsetHeight - 3*10 - 3*5 - 20;
 	document.getElementById("myCanvas").height = canvasAutoHeight;
 
-	let data = {
+	var data = {
 		page: "index",
 		freq: 0,
 		impulsIzmerenieEnable: 0  //0-off, 1-CV, 2-TG
@@ -154,36 +156,14 @@
 
 	function sendData () {
 		console.log('TO Server: ', JSON.stringify( data ));
-		if (connection) connection.send(JSON.stringify( data ));
+		ws.send(JSON.stringify( data ));
 	};
 
 
 	drawFrame();
 	drawStart();
 	updateAllPage();
-	let connection = new WebSocket('ws://' + location.host + ':81/index.htm', ['arduino']);
-	
-	connection.onopen = function () {
-		//connection.send('ping');		
-	};
 
-	connection.onerror = function (error) {
-		console.log('WebSocket Error ', error);
-		alert("Ошибка " + error.message);
-	};
-
-	connection.onmessage = function (e) {
-		console.log('FROM Server: ', e.data);
-		let obj = JSON.parse(e.data);
-		for (x in obj) {
-			if ( data[x]  != null ) {
-				data[x] = obj[x];
-				data["freq"] = data["freq"]*5/10/2;
-				updateAllPage();
-				drawFrame();
-			}
-		}
-	};
 
 
 	function onCV() {
@@ -248,6 +228,50 @@
 			predelMinSet();
 		}
 	};
+
+
+
+
+var ws;
+function startConControl(){
+	let wsAdress = 'ws:/' + deviceIp + ':81/index.htm';
+	//wsAdress = 'ws://' + location.host + ':81/index.htm';
+	ws = new WebSocket(wsAdress, ['arduino']);
+	
+	ws.onopen = function () {
+		//ws.send('ping');		
+	};
+
+	ws.onerror = function (error) {
+		console.log('WebSocket Error ', error);
+		alert("Ошибка " + error.message);
+	};
+
+	ws.onmessage = function (e) {
+		console.log('FROM Server: ', e.data);
+		let obj = JSON.parse(e.data);
+		for (x in obj) {
+			if ( data[x]  != null ) {
+				data[x] = obj[x];
+				data["freq"] = data["freq"]*5/10/2;
+				updateAllPage();
+				drawFrame();
+			}
+		}
+	};
+}
+
+
+function setDeviceIp(setIp){
+	deviceIp = setIp;
+	console.log('deviceIp=', deviceIp);
+}
+
+if (location.host) {
+	setDeviceIp(location.host);
+	startConControl();
+}
+
 
 </script>
 </body>
