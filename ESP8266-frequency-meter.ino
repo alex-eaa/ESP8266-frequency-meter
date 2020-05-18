@@ -20,6 +20,7 @@
 #include <WebSocketsServer.h>
 #include <FS.h>
 #include <ArduinoJson.h>
+#include <ESP8266mDNS.h>
 
 #define LED_WIFI 2     // номер пина светодиода GPIO2 (D4)
 #define LED_RED 15     // пин, красного светодиода 
@@ -29,6 +30,7 @@
 #define IMPULS_IN_CV 14   // пин, вход импульсов от датчика стенда проверки ЦВ
 #define IMPULS_IN_TG 5    // пин, вход импульсов от датчика стенда проверки ТАХОГЕНЕРАТОРА
 #define CONTACT_IN 16     // пин, вход (без прерывания) от нормально-закрытого контакта ЦВ
+#define DEVICE_TYPE "esplink_fm_"
 
 bool wifiAP_mode = 0;
 char *p_ssidAP = "AP";             //SSID-имя вашей сети
@@ -114,6 +116,7 @@ void loop() {
   wifi_init();
   webSocket.loop();
   server.handleClient();
+  MDNS.update();
 
   // Активация/деактивация таймера с прерыванием если измерение разрешено/запрещено
   if ( impulsIzmerenieEnable != 0 && impulsTimerEnable == 0) {
